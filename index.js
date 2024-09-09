@@ -22,12 +22,13 @@ app.get('/flattrade/callback', (req, res) => {
     if (!authCode) {
         return res.status(400).json({ message: "Auth code not found in callback" });
     }
-    console.log(authCode);
+    // console.log(authCode);
 
     try{
         const response = axios.get(`${process.env.serverURL}?code=${authCode}`);
-        console.log(response.data);
-        res.send(response.data)
+        console.log("token",response);
+        
+        res.send(response)
     }
     catch(e){
         console.log("error",e)
