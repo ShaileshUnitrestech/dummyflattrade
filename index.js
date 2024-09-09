@@ -16,7 +16,7 @@ app.get("/flattrade",(req,res)=>{
     res.redirect(url);
 })
 
-app.get('/flattrade/callback', (req, res) => {
+app.get('/flattrade/callback', async(req, res) => {
     const authCode = req.query.code;
 
     if (!authCode) {
@@ -26,12 +26,14 @@ app.get('/flattrade/callback', (req, res) => {
 
     try{
         const response = axios.get(`${process.env.serverURL}?code=${authCode}`);
-        console.log("token",response);
+        let alldata = await response;
+        console.log("token",alldata);
         
-        res.send(response)
+        res.send({"response":alldata})
     }
     catch(e){
         console.log("error",e)
+        res.send({"error":e});
     }
 });
 
