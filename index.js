@@ -17,7 +17,7 @@ app.get("/flattrade",(req,res)=>{
 })
 
 app.get('/flattrade/callback', (req, res) => {
-    const authCode = req.query.request_code;
+    const authCode = req.query.code;
 
     if (!authCode) {
         return res.status(400).json({ message: "Auth code not found in callback" });
