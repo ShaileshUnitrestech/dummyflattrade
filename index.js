@@ -45,14 +45,15 @@ app.get('/flattrade/callback', async (req, res) => {
         
         try {
             const response = await axios(config);
-        
+            console.log(response);
             res.json({
                 status: response.status,
                 token: response.data.token, 
                 client: response.data.client,
                 message: "Token retrieved successfully"
             });
-        } catch (error) {
+        }
+        catch (error) {
             console.error("Error during token retrieval:", error);
             res.status(500).json({ error: "Failed to retrieve token" });
         }        
