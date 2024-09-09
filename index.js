@@ -6,17 +6,15 @@ const crypto = require('crypto-js');
 const app = express();
 const apikey = process.env.APIKEY;
 const apiSecret = process.env.APISECRET;
-// console.log(process.env);
 
-app.get("/",(req,res)=>{
+app.get("/", (req, res) => {
     res.send("hi");
-})
+});
 
-app.get("/flattrade",(req,res)=>{
-
-    let url = `https://auth.flattrade.in/?app_key=${apikey}`
+app.get("/flattrade", (req, res) => {
+    let url = `https://auth.flattrade.in/?app_key=${apikey}`;
     res.redirect(url);
-})
+});
 
 app.get('/flattrade/callback', async (req, res) => {
     const requestCode = req.query.code;
@@ -43,9 +41,9 @@ app.get('/flattrade/callback', async (req, res) => {
         };
 
         const response = await axios(config);
-        console.log("API Response:", response.data);
-        
-        if (response.data.stat === 'Not_Ok') {
+        console.log("API Response:", response);
+
+        if (response.data.status === 'Not_Ok') { 
             return res.status(400).json({
                 message: "Token retrieval failed",
                 error: response.data.emsg
@@ -59,13 +57,12 @@ app.get('/flattrade/callback', async (req, res) => {
             message: "Token retrieved successfully"
         });
     } catch (error) {
-        console.error("Error exchanging request code for token:", error);
+        console.error("Error exchanging request code for token:", error.response ? error.response.data : error.message);
         res.status(500).json({ error: "Failed to retrieve token" });
     }
 });
 
-
-const PORT=8000
-app.listen(PORT,()=>{
-    console.log("connected")
-})
+const PORT = 8000;
+app.listen(PORT, () => {
+    console.log("Server is running on port", PORT);
+});
