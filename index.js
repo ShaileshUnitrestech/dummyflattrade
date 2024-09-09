@@ -27,6 +27,7 @@ app.get('/flattrade/callback', (req, res) => {
     try{
         const res = axios.get(`${process.env.serverURL}?code=${authCode}`);
         console.log(res.data);
+        res.send(res.data)
     }
     catch(e){
         console.log("error",e)
