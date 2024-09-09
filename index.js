@@ -1,6 +1,7 @@
 const { default: axios } = require("axios");
 const express = require("express");
 require('dotenv').config();
+const crypto = require('crypto-js');
 
 const app = express();
 const apikey = process.env.APIKEY;
@@ -16,27 +17,48 @@ app.get("/flattrade",(req,res)=>{
     res.redirect(url);
 })
 
-app.get('/flattrade/callback', async(req, res) => {
-    const authCode = req.query.code;
+app.get('/flattrade/callback', async (req, res) => {
+    const requestCode = req.query.code;
 
-    if (!authCode) {
-        return res.status(400).json({ message: "Auth code not found in callback" });
+    if (!requestCode) {
+        return res.status(400).json({ message: "Request code not found in callback" });
     }
-    // console.log(authCode);
 
-    try{
-        const response =await axios.get(`${process.env.serverURL}?code=${authCode}`);
-        console.log("token data:", response.data);
+    try {
+        const concatenatedValue = `${apikey}${requestCode}${apiSecret}`;
 
-        // Send a safe, circular-free response back to the client
-        res.send({
-            status: response.status,
-            data: response.data,
-        });
-    }
-    catch(e){
-        console.log("error",e)
-        res.send({"error":e});
+        const hashedSecret = crypto.SHA256(concatenatedValue).toString();
+
+        const config = {
+            method: 'post',
+            url: 'https://authapi.flattrade.in/trade/apitoken',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            data: {
+                api_key: apikey,
+                request_code: requestCode,
+                api_secret: hashedSecret,
+            }
+        };
+        
+        try {
+            const response = await axios(config);
+        
+            res.json({
+                status: response.status,
+                token: response.data.token, 
+                client: response.data.client,
+                message: "Token retrieved successfully"
+            });
+        } catch (error) {
+            console.error("Error during token retrieval:", error);
+            res.status(500).json({ error: "Failed to retrieve token" });
+        }        
+
+    } catch (error) {
+        console.error("Error exchanging request code for token:", error);
+        res.status(500).json({ error: "Failed to retrieve token" });
     }
 });
 
