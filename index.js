@@ -5,6 +5,7 @@ const crypto = require('crypto-js');
 
 const app = express();
 const apikey = process.env.APIKEY;
+const apiSecret = process.env.APISECRET;
 // console.log(process.env);
 
 app.get("/",(req,res)=>{
