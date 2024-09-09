@@ -25,11 +25,14 @@ app.get('/flattrade/callback', async(req, res) => {
     // console.log(authCode);
 
     try{
-        const response = axios.get(`${process.env.serverURL}?code=${authCode}`);
-        let alldata = await response;
-        console.log("token",alldata);
-        
-        res.send({"response":alldata})
+        const response =await axios.get(`${process.env.serverURL}?code=${authCode}`);
+        console.log("token data:", response.data);
+
+        // Send a safe, circular-free response back to the client
+        res.send({
+            status: response.status,
+            data: response.data,
+        });
     }
     catch(e){
         console.log("error",e)
