@@ -1,3 +1,4 @@
+const { default: axios } = require("axios");
 const express = require("express");
 require('dotenv').config();
 
@@ -14,7 +15,22 @@ app.get("/flattrade",(req,res)=>{
     res.redirect(url);
 })
 
+app.get('/flattrade/callback', (req, res) => {
+    const authCode = req.query.request_code;
 
+    if (!authCode) {
+        return res.status(400).json({ message: "Auth code not found in callback" });
+    }
+    console.log(authCode);
+
+    try{
+        const res = axios.get(`${process.env.serverURL}?request_code=${authCode}`);
+        console.log(res.data);
+    }
+    catch(e){
+        console.log("error",e)
+    }
+});
 
 const PORT=8000
 app.listen(PORT,()=>{
