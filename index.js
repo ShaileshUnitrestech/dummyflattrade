@@ -4,6 +4,7 @@ require('dotenv').config();
 
 const app = express();
 const apikey = process.env.APIKEY;
+// console.log(apikey);
 
 app.get("/",(req,res)=>{
     res.send("hi");
@@ -24,7 +25,7 @@ app.get('/flattrade/callback', (req, res) => {
     console.log(authCode);
 
     try{
-        const res = axios.get(`${process.env.serverURL}?request_code=${authCode}`);
+        const res = axios.get(`${process.env.serverURL}?code=${authCode}`);
         console.log(res.data);
     }
     catch(e){
