@@ -26,9 +26,6 @@ app.get('/flattrade/callback', async (req, res) => {
     try {
         const concatenatedValue = `${apikey}${requestCode}${apiSecret}`;
         const hashedSecret = crypto.SHA256(concatenatedValue).toString();
-        
-        console.log("Concatenated Value:", concatenatedValue);
-        console.log("Hashed Secret:", hashedSecret);
 
         const config = {
             method: 'post',
@@ -44,10 +41,9 @@ app.get('/flattrade/callback', async (req, res) => {
         };
 
         const response = await axios(config);
-        console.log("API Response:", response.data);
-        
-        if (response.data.stat === 'Not_Ok') {
-            console.log("API Error Message:", response.data.emsg);
+        console.log("API Response:", response);
+
+        if (response.data.status === 'Not_Ok') { 
             return res.status(400).json({
                 message: "Token retrieval failed",
                 error: response.data.emsg
@@ -61,11 +57,10 @@ app.get('/flattrade/callback', async (req, res) => {
             message: "Token retrieved successfully"
         });
     } catch (error) {
-        console.error("Error exchanging request code for token:", error);
+        console.error("Error exchanging request code for token:", error.response ? error.response.data : error.message);
         res.status(500).json({ error: "Failed to retrieve token" });
     }
 });
-
 
 const PORT = 8000;
 app.listen(PORT, () => {
