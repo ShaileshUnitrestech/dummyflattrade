@@ -5,8 +5,9 @@ const crypto = require('crypto-js');
 
 const app = express();
 const apikey = process.env.APIKEY;
-const apiSecret = process.env.APISECRET;
-console.log(apikey, " shailesh ",apiSecret)
+const apiSecret = process.env.apiSecret;
+
+// console.log(apikey, " shailesh ", apiSecret);
 
 app.get("/", (req, res) => {
     res.send("hi");
@@ -25,7 +26,10 @@ app.get('/flattrade/callback', async (req, res) => {
     }
 
     try {
+        // Concatenate the values
         const concatenatedValue = `${apikey}${requestCode}${apiSecret}`;
+        
+        // Create the SHA-256 hash of the concatenated value
         const hashedSecret = crypto.SHA256(concatenatedValue).toString();
 
         const config = {
@@ -41,19 +45,21 @@ app.get('/flattrade/callback', async (req, res) => {
             }
         };
 
+        // Make the API call to get the token
         const response = await axios(config);
-        console.log("API Response:", response);
+        console.log("API Response:", response.data);
 
-        if (response.data.status === 'Not_Ok') { 
+        if (response.data.status === 'Not_Ok') {
             return res.status(400).json({
                 message: "Token retrieval failed",
                 error: response.data.emsg
             });
         }
 
+        // Respond with the retrieved token and client information
         res.json({
             status: response.status,
-            token: response.data.token, 
+            token: response.data.token,
             client: response.data.client,
             message: "Token retrieved successfully"
         });
